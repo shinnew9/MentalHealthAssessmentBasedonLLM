@@ -9,8 +9,8 @@ DATASET_FILES = {
     "Hispanic": ROOT / "data" / "psydial4" / "student_only_rewrite_hispanic_college_grad_100.jsonl",
     "African American": ROOT / "data" / "psydial4" / "student_only_rewrite_african_american_college_grad_100.jsonl",
     "Korean": {
-        "Base Gemini": ROOT / "data" / "korean" / "korean_base_outputs_15.json",
-        "Fine-tuned Gemini": ROOT / "data" / "korean" / "korean_finetuned_outputs_15.json",
+        "Base Gemini": ROOT / "data" / "korean" / "korean_base_app_15.json",
+        "Fine-tuned Gemini": ROOT / "data" / "korean" / "korean_finetuned_app_15.json",
     },
     "Others": None,
 }
@@ -62,11 +62,15 @@ def parse_session_psydial(raw: dict):
     return {
         "session_id": sid,
         "turns": norm,
+        "topic": raw.get("topic", ""),
+        "psychotherapy": raw.get("psychotherapy", ""),
+        "theme": raw.get("theme", ""),
+        "reference_ko": raw.get("reference_ko", ""),
+        "reference_en": raw.get("reference_en", ""),
     }
 
 
 # Korean dataset is structured as a single text input, so we need logic to split it into turns based on speaker labels.
-# "내담자: ... 상담사: ..." 형태로 되어 있다고 가정하고, 이를 turn으로 나누는 로직
 # Assumimng that the conversation looks like "Client: ... Counselor: ..." and splitting turns based on these speaker labels. 
 # If there are lines without speaker labels, we will attach them to the previous turn. 
 def parse_korean_input_to_turns(input_text: str):
@@ -97,24 +101,29 @@ def parse_korean_input_to_turns(input_text: str):
 
 
 def parse_session_korean_output(raw: dict):
-    sid = str(raw.get("dialog_id", raw.get("session_id", raw.get("id", "unknown"))))
+    sid = str(raw.get("session_id", raw.get("dialog_id", raw.get("id", "unknown"))))
 
-    input_text = str(raw.get("input", "")).strip()
-    prediction = str(raw.get("prediction", "")).strip()
-    reference = str(raw.get("reference", "")).strip()
+    turns = raw.get("turns", [])
 
-    turns = parse_korean_input_to_turns(input_text)
+    norm = []
+    for t in turns:
+        speaker = t.get("speaker", "client")
+        text = str(t.get("text", ""))
 
-    if prediction:
-        turns.append({
-            "speaker": "counselor",
-            "text": prediction,
-        })
+        # remove leading indentation from every line
+        text = "\n".join(line.strip() for line in text.splitlines()).strip()
+
+        if text:
+            norm.append({
+                "speaker": speaker,
+                "text": text,
+            })
 
     return {
         "session_id": sid,
-        "turns": turns,
-        "reference": reference,
+        "turns": norm,
+        "reference_ko": raw.get("reference_ko", ""),
+        "reference_en": raw.get("reference_en", ""),
     }
 
 

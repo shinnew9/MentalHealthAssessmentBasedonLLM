@@ -138,8 +138,9 @@ def main():
             frac = 0 if total == 0 else (done / total)
 
             if not is_first_time:
-                st.progress(frac)
-                st.caption(f"Progress: {done}/{total}")
+                if culture != "Korean":
+                    st.progress(frac)
+                    st.caption(f"Progress: {done}/{total}")
             else:
                 st.caption("Ready to start")
 

@@ -161,6 +161,17 @@ def main():
     st.subheader(f"Session {idx + 1} / {len(sessions)}")
     st.caption(f"Session ID: {sid}")
 
+    topic = session.get("topic", "")
+    psychotherapy = session.get("psychotherapy", "")
+
+    if topic or psychotherapy:
+        st.caption(
+            "Keywords: "
+            + " • ".join([x for x in [topic, psychotherapy] if x])
+        )
+
+
+
     # Chat (left/right bubbles)
     render_chat(session.get("turns", []), culture=culture)
 
@@ -183,18 +194,24 @@ def main():
     st.markdown("### Rate this conversation (1–5)")
     st.caption("1 = Poor / 3 = Acceptable / 5 = Excellent")
 
-    with st.form("rating_form", clear_on_submit=False):
+    form_key_suffix = f"{culture}_{sid}_{idx}"
+
+    with st.form(f"rating_form_{form_key_suffix}", clear_on_submit=False):
         c1, c2 = st.columns(2)
         with c1:
-            empathy = st.slider("Empathy / Warmth", 1, 5, 3)
-            clarity = st.slider("Clarity / Helpfulness", 1, 5, 3)
-            safety = st.slider("Safety / Non-judgment", 1, 5, 3)
+            empathy = st.slider("Empathy / Warmth", 1, 5, 3, key=f"empathy_{form_key_suffix}")
+            clarity = st.slider("Clarity / Helpfulness", 1, 5, 3, key=f"clarity_{form_key_suffix}")
+            safety = st.slider("Safety / Non-judgment", 1, 5, 3, key=f"safety_{form_key_suffix}")
         with c2:
-            cultural_fit = st.slider("Cultural Appropriateness", 1, 5, 3)
-            specificity = st.slider("Specificity (not stereotypical)", 1, 5, 3)
-            meaning = st.slider("Maintains Original Meaning", 1, 5, 3)
+            cultural_fit = st.slider("Cultural Appropriateness", 1, 5, 3, key=f"cultural_{form_key_suffix}")
+            specificity = st.slider("Specificity (not stereotypical)", 1, 5, 3, key=f"specificity_{form_key_suffix}")
+            meaning = st.slider("Maintains Original Meaning", 1, 5, 3, key=f"meaning_{form_key_suffix}")
 
-        comment = st.text_area("Optional comment (what felt authentic / what felt off)", height=90)
+        comment = st.text_area(
+            "Optional comment (what felt authentic / what felt off)",
+            height=90,
+            key=f"comment_{form_key_suffix}",
+        )
         submit = st.form_submit_button("Save rating")
 
     if submit:

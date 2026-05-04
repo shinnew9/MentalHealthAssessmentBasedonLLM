@@ -78,6 +78,9 @@ def build_app_dataset(model_outputs, en_rows, ko_rows):
         app_rows.append({
             "session_id": did,
             "dialog_id": did,
+            "topic": ko.get("topic", ""),
+            "psychotherapy": ko.get("psychotherapy", ""),
+            "theme": ko.get("theme", ""),
             "turns": turns,
             "reference_ko": reference_ko,
             "reference_en": reference_en,
