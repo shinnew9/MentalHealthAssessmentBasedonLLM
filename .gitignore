@@ -1,30 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
 
-# secrets
+
+# Virtual Environment
+.venv/
+env/
+venv/
+.devcontainer/
+
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+
+
+# VSCode
+.vscode/
+
+
+# Logs / Runtime
+logs/
+*.log
+*.csv
+
+
+# Data
+data/
+!data/README.md
+
+# (optional) keep small sample only
+# !data/korean/korean_base_app_15.json
+# !data/korean/korean_finetuned_app_15.json
+
+
+# Model / Outputs
+*.jsonl
+*_outputs_*.json
+*_app_*.json
+
+
+# Secrets
 .env
 *.env
-
-# venv
-.venv/
-.venv*/
-venv/
-
-# cache
-__pycache__/
-*.pyc
-
-# streamlit
-.streamlit/
-
-# logs
-logs/
-
-# Large/local data
-Chatbot-Powered-by-Gemini-and-OpenAI-API/data/DataTranslationAllAtOnce_ver2_clean.ipynb
-Chatbot-Powered-by-Gemini-and-OpenAI-API/data/PsyDial-en-dialogues-clean.txt
-Chatbot-Powered-by-Gemini-and-OpenAI-API/data/data_sampling.ipynb
-
-!Chatbot-Powered-by-Gemini-and-OpenAI-API/data/psydial4/
-!Chatbot-Powered-by-Gemini-and-OpenAI-API/data/psydial4/student_only_100.jsonl
-!Chatbot-Powered-by-Gemini-and-OpenAI-API/data/psydial4/student_only_rewrite_hispanic_college_grad_100.jsonl
-!Chatbot-Powered-by-Gemini-and-OpenAI-API/data/psydial4/student_only_rewrite_african_american_college_grad_100.jsonl
-

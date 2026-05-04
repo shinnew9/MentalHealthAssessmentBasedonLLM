@@ -3,8 +3,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-EN_TEST = ROOT / "data" / "test_heldout_15.json"
-KO_TEST = ROOT / "data" / "korean_translated_15.json"
+EN_TEST = ROOT / "data" / "korean" / "test_heldout_15.json"
+KO_TEST = ROOT / "data" / "korean" / "korean_translated_15.json"
 
 BASE_OUTPUT = ROOT / "data" / "korean" / "korean_base_outputs_15.json"
 FT_OUTPUT = ROOT / "data" / "korean" / "korean_finetuned_outputs_15.json"
