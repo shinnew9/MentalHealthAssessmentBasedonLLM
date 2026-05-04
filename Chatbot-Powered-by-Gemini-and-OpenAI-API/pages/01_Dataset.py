@@ -30,19 +30,21 @@ def last_culture_for_rater(rows, rater_id: str):
 
 
 def _reset_culture_state():
-    """dataset lock 해제 + 선택 상태 초기화"""
-    for k in ["culture", "selected_culture_lock", "session_idx"]:
+    for k in ["culture", "selected_culture_lock", "session_idx", "korean_model_type", "sampled_sessions"]:
         st.session_state.pop(k, None)
 
 
-def _go_assess(culture: str, start_mode: str = "resume"):
-    """
-    start_mode:
-      - "resume": next unrated로 가게
-      - "start": 첫 세션부터
-    """
+def _go_assess(culture: str, start_mode: str = "resume", model_type: str | None = None):
     st.session_state["culture"] = culture
     st.session_state["selected_culture_lock"] = culture
+
+    if culture == "Korean" and model_type:
+        st.session_state["korean_model_type"] = model_type
+
+    # cache reset
+    for k in list(st.session_state.keys()):
+        if k.startswith("_sessions_cache") or k.startswith("_korean_sampled_sessions"):
+            st.session_state.pop(k, None)
 
     if start_mode == "start":
         st.session_state["session_idx"] = 0
@@ -86,10 +88,10 @@ def main():
     # lock 결정
     # 1) session_state에 lock 있으면 그걸 사용
     # 2) 없으면 rows_me에서 마지막 culture 추론해서 lock으로 설정
-    if not st.session_state.get("selected_culture_lock"):
-        inferred = last_culture_for_rater(rows, rater_id=rater_id)
-        if inferred:
-            st.session_state["selected_culture_lock"] = inferred
+    # if not st.session_state.get("selected_culture_lock"):
+    #     inferred = last_culture_for_rater(rows, rater_id=rater_id)
+    #     if inferred:
+    #         st.session_state["selected_culture_lock"] = inferred
 
     lock = st.session_state.get("selected_culture_lock")
 
@@ -111,10 +113,10 @@ def main():
     # 보여줄 cultures 결정
     if is_first_time:
         # 첫 방문: 선택만 하게 (진행률/Resume 숨김)
-        cultures = ["Chinese", "Hispanic", "African American"]
+        cultures = ["Chinese", "Hispanic", "African American", "Korean"]
     else:
         # Resume: lock된 것만 보여주기 (없으면 3개 보여줌)
-        cultures = [lock] if lock else ["Chinese", "Hispanic", "African American"]
+        cultures = [lock] if lock else ["Chinese", "Hispanic", "African American", "Korean"]
 
     cols = st.columns(len(cultures))
 
@@ -142,18 +144,27 @@ def main():
                 st.caption("Ready to start")
 
             # Buttons
+            model_type = None
+            if culture == "Korean":
+                model_type = st.radio(
+                    "Select Korean model output",
+                    ["Base Gemini", "Fine-tuned Gemini"],
+                    key="korean_model_type_radio",
+                )
+
             if is_first_time:
                 # First time: Select only
                 if st.button("Select", key=f"select_{culture}", use_container_width=True):
-                    _go_assess(culture, start_mode="start")
+                    _go_assess(culture, start_mode="start", model_type=model_type)
             else:
                 b1, b2 = st.columns(2)
                 with b1:
                     if st.button("Resume", key=f"resume_{culture}", use_container_width=True):
-                        _go_assess(culture, start_mode="resume")
+                        _go_assess(culture, start_mode="resume", model_type=model_type)
                 with b2:
                     if st.button("Start from 1", key=f"start_{culture}", use_container_width=True):
-                        _go_assess(culture, start_mode="start")
+                        _go_assess(culture, start_mode="start", model_type=model_type)
+
 
     st.markdown("---")
     if is_first_time:

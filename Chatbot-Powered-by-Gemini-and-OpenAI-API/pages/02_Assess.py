@@ -36,14 +36,24 @@ def scroll_to_top():
 
 
 def _get_sessions(culture: str):
-    # 1) session_state cache 우선 사용
-    cached = st.session_state.get("_sessions_cache")
+    cache_key = f"_sessions_cache_{culture}_{st.session_state.get('korean_model_type', '')}"
+
+    cached = st.session_state.get(cache_key)
     if cached and isinstance(cached, list) and len(cached) > 0:
         return cached
 
-    # 2) 없으면 로드하고 cache 저장
-    sessions = get_sessions_for_culture(culture)  # core_ui.dataset에서 불러오는 함수
-    st.session_state["_sessions_cache"] = sessions
+    sessions = get_sessions_for_culture(culture)
+
+    if culture == "Korean":
+        sample_key = f"_korean_sampled_sessions_{st.session_state.get('korean_model_type', 'Base Gemini')}"
+        if sample_key not in st.session_state:
+            import random
+            st.session_state[sample_key] = random.sample(
+                sessions, min(5, len(sessions))
+            )
+        sessions = st.session_state[sample_key]
+
+    st.session_state[cache_key] = sessions
     return sessions
 
 
@@ -96,7 +106,12 @@ def main():
 
     rater_id = st.session_state.get("rater_id", "").strip()
     email = st.session_state.get("email", "").strip()
-    ds_file = str(DATASET_FILES.get(culture) or "")
+    ds_conf = DATASET_FILES.get(culture) or ""
+    if culture == "Korean" and isinstance(ds_conf, dict):
+        model_type = st.session_state.get("korean_model_type", "Base Gemini")
+        ds_file = str(ds_conf.get(model_type, ""))
+    else:
+        ds_file = str(ds_conf)
 
     sessions = _get_sessions(culture)
     total = len(sessions)
@@ -109,7 +124,13 @@ def main():
     done, total = compute_progress(total, all_rows, rater_id=rater_id, culture=culture)
 
     st.markdown("## Conversation Assess")
-    st.caption(f"Dataset: {culture} • Progress: {done}/{total} completed")
+    if culture == "Korean":
+        st.caption(
+            f"Dataset: {culture} / {st.session_state.get('korean_model_type', 'Base Gemini')} "
+            f"• Progress: {done}/{total} completed"
+        )
+    else:
+        st.caption(f"Dataset: {culture} • Progress: {done}/{total} completed")
 
     # Controls: Resume / Start Over
     ctrl = st.columns([1.2, 1.2, 3])
@@ -231,7 +252,6 @@ def main():
     with nav[3]:
         if st.button("Go to results →", use_container_width=True):
             st.switch_page("pages/03_results.py")
-
 
 
 if __name__ == "__main__":
