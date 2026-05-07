@@ -29,8 +29,8 @@ logs/
 
 
 # Data
-data/
-!data/README.md
+# data/
+# !data/README.md
 
 # (optional) keep small sample only
 # !data/korean/korean_base_app_15.json
