@@ -80,7 +80,7 @@ def render_app_header():
         unsafe_allow_html=True,
     )
     st.markdown(
-        '<div class="page-sub">A culturally adaptive companion for your mental wellness journey.</div>',
+        '<div class="page-sub">A culturally adaptive dataset for mental wellness using LLM.</div>',
         unsafe_allow_html=True,
     )
 
