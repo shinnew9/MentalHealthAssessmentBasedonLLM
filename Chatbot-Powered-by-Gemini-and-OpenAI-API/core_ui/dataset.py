@@ -102,10 +102,9 @@ def parse_korean_input_to_turns(input_text: str):
 
 def parse_session_korean_output(raw: dict):
     sid = str(raw.get("session_id", raw.get("dialog_id", raw.get("id", "unknown"))))
-
     turns = raw.get("turns", [])
-
     norm = []
+
     for t in turns:
         speaker = t.get("speaker", "client")
         text = str(t.get("text", ""))
@@ -122,6 +121,9 @@ def parse_session_korean_output(raw: dict):
     return {
         "session_id": sid,
         "turns": norm,
+        "topic": raw.get("topic", ""),
+        "psychotherapy": raw.get("psychotherapy", ""),
+        "theme": raw.get("theme", ""),
         "reference_ko": raw.get("reference_ko", ""),
         "reference_en": raw.get("reference_en", ""),
     }
