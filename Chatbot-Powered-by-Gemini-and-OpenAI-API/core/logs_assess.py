@@ -19,6 +19,7 @@ METRIC_FIELDS = [
     "cultural_appropriateness",
     "specificity_nostereotype",
     "meaning_preserve",
+    "model_type"
 ]
 
 
