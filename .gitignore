@@ -38,9 +38,9 @@ logs/
 
 
 # Model / Outputs
-*.jsonl
-*_outputs_*.json
-*_app_*.json
+# *.jsonl
+# *_outputs_*.json
+# *_app_*.json
 
 
 # Secrets

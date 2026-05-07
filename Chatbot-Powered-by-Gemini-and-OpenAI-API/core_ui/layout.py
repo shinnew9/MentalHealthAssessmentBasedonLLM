@@ -3,7 +3,7 @@ import streamlit as st
 
 def set_base_page_config():
     st.set_page_config(
-        page_title="Dataset Assessment Simulation made by LLM",
+        page_title="Mental Health Assessment Based on LLM Simulation",
         layout="wide",
     )
 
