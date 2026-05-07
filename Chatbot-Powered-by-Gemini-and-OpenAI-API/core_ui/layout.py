@@ -76,7 +76,7 @@ def inject_base_css():
 
 def render_app_header():
     st.markdown(
-        '<div class="page-title">Dataset Assessment Simulation made by LLM</div>',
+        '<div class="page-title">Mental Health Assessment Based on LLM Simulation</div>',
         unsafe_allow_html=True,
     )
     st.markdown(
