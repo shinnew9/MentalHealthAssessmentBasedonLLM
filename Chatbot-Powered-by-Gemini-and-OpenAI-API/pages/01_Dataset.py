@@ -11,10 +11,6 @@ from core.logs_assess import (
 from core_ui.dataset import get_sessions_for_culture, DATASET_FILES # 데이터 로더 + 파일맵
 
 
-# - last_culture_for_rater(rows, rater_id) : rater_id 기준 가장 마지막 culture 추론
-# - _go_assess(culture, start_mode)        : culture 세팅 후 02_Assess로 이동
-# - _reset_culture_state()                : lock 해제 및 관련 state reset
-
 # Fallback implementations
 def last_culture_for_rater(rows, rater_id: str):
     """rows (list[dict])에서 해당 rater_id의 가장 최근 row의 culture를 반환"""
@@ -84,14 +80,6 @@ def main():
 
     # 내 row만 필터
     rows_me = [r for r in rows if (r.get("rater_id", "").strip() == rater_id)]
-
-    # lock 결정
-    # 1) session_state에 lock 있으면 그걸 사용
-    # 2) 없으면 rows_me에서 마지막 culture 추론해서 lock으로 설정
-    # if not st.session_state.get("selected_culture_lock"):
-    #     inferred = last_culture_for_rater(rows, rater_id=rater_id)
-    #     if inferred:
-    #         st.session_state["selected_culture_lock"] = inferred
 
     lock = st.session_state.get("selected_culture_lock")
 
