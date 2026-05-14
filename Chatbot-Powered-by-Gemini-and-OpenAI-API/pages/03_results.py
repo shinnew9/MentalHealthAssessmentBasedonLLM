@@ -3,6 +3,7 @@ import streamlit as st
 from core_ui.layout import set_base_page_config, inject_base_css, render_top_right_signout
 from core_ui.auth import require_signed_in
 from core_ui.dataset import get_sessions_for_culture
+from core_ui.session_sampling import select_fixed_korean_sessions
 from core.logs_assess import (
     read_assess_rows,
     filter_rows,
@@ -37,6 +38,10 @@ def main():
 
     # Total sessions for progress
     sessions = get_sessions_for_culture(culture)
+
+    if culture == "Korean":
+        sessions = select_fixed_korean_sessions(sessions)
+
     total = len(sessions)
 
     rows = read_assess_rows()
