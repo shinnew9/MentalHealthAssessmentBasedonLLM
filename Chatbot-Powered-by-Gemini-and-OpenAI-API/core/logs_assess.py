@@ -87,12 +87,31 @@ def filter_rows(rows: List[Dict], *, rater_id: str, culture: str) -> List[Dict]:
     return out
 
 
-def rated_session_ids(rows: List[Dict], *, rater_id: str, culture: str) -> Set[str]:
-    """
-    If a session_id appears at least once for (rater_id, culture), it's considered completed for resume logic.
-    """
-    filtered = filter_rows(rows, rater_id=rater_id, culture=culture)
-    return {str(r.get("session_id", "")).strip() for r in filtered if str(r.get("session_id", "")).strip()}
+# def rated_session_ids(rows: List[Dict], *, rater_id: str, culture: str) -> Set[str]:
+#     """
+#     If a session_id appears at least once for (rater_id, culture), it's considered completed for resume logic.
+#     """
+#     filtered = filter_rows(rows, rater_id=rater_id, culture=culture)
+#     return {str(r.get("session_id", "")).strip() for r in filtered if str(r.get("session_id", "")).strip()}
+
+
+def rated_session_ids(rows, rater_id: str, culture: str, model_type: str = ""):
+    rated = set()
+
+    for r in rows:
+        if r.get("rater_id") != rater_id:
+            continue
+        if r.get("culture") != culture:
+            continue
+
+        # Korean은 Base/Fine-tuned를 반드시 구분
+        if culture == "Korean":
+            if r.get("model_type", "") != model_type:
+                continue
+
+        rated.add(str(r.get("session_id", "")))
+
+    return rated
 
 
 def latest_rows_per_session(rows: List[Dict]) -> Dict[str, Dict]:
@@ -115,9 +134,9 @@ def latest_rows_per_session(rows: List[Dict]) -> Dict[str, Dict]:
     return latest
 
 
-def compute_progress(total_sessions: int, rows: List[Dict], *, rater_id: str, culture: str) -> Tuple[int, int]:
-    done = len(rated_session_ids(rows, rater_id=rater_id, culture=culture))
-    return done, total_sessions
+def compute_progress(total, rows, rater_id: str, culture: str, model_type: str = ""):
+    done = len(rated_session_ids(rows, rater_id, culture, model_type))
+    return done, total
 
 
 def last_culture_for_rater(rows: List[Dict], *, rater_id: str) -> str | None:
