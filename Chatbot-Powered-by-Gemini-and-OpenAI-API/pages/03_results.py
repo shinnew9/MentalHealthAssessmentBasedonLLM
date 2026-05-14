@@ -40,13 +40,23 @@ def main():
     sessions = get_sessions_for_culture(culture)
 
     if culture == "Korean":
-        sessions = select_fixed_korean_sessions(sessions)
+        st.info(f"Showing results for: **{model_type}**")
 
     total = len(sessions)
 
     rows = read_assess_rows()
-    my_rows = filter_rows(rows, rater_id=rater_id, culture=culture)
-    done_ids = rated_session_ids(rows, rater_id=rater_id, culture=culture)
+    model_type = st.session_state.get("korean_model_type", "") if culture == "Korean" else ""
+
+    my_rows = []
+    for r in rows:
+        if r.get("rater_id") != rater_id:
+            continue
+        if r.get("culture") != culture:
+            continue
+        if culture == "Korean" and r.get("model_type", "") != model_type:
+            continue
+        my_rows.append(r)
+    done_ids = rated_session_ids(rows, rater_id=rater_id, culture=culture, model_type=model_type)
     done = len(done_ids)
 
     st.metric("Completed (unique sessions rated at least once)", f"{done} / {total}")
