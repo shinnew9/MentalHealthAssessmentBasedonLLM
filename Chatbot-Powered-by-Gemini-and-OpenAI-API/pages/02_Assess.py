@@ -116,7 +116,7 @@ def _find_next_unrated_index(sessions, rated_ids_set):
     return None
 
 
-def _ensure_resume_pointer(sessions, rater_id:int, culture:str, model_type:str):
+def _ensure_resume_pointer(sessions, rater_id:int, culture:str, model_type:str = ""):
     all_rows = read_assess_rows()
     rated_ids_set = rated_session_ids(all_rows, rater_id=rater_id, culture=culture, model_type=model_type)
     nxt = _find_next_unrated_index(sessions, rated_ids_set)
@@ -136,6 +136,7 @@ def _ensure_resume_pointer(sessions, rater_id:int, culture:str, model_type:str):
 
     cur_idx = max(0, min(cur_idx, len(sessions) - 1))
     cur_sid = str(sessions[cur_idx].get("session_id", "")).strip()
+
     if cur_sid and cur_sid in rated_ids_set:
         nxt = _find_next_unrated_index(sessions, rated_ids_set)
         st.session_state["session_idx"] = nxt if nxt is not None else cur_idx
@@ -161,7 +162,7 @@ def main():
     email = st.session_state.get("email", "").strip()
     ds_conf = DATASET_FILES.get(culture) or ""
     if culture == "Korean" and isinstance(ds_conf, dict):
-        model_type = st.session_state.get("korean_model_type", "Base Gemini")
+        model_type = st.session_state.get("korean_model_type", "") if culture=="Korean" else ""
         ds_file = str(ds_conf.get(model_type, ""))
     else:
         ds_file = str(ds_conf)
@@ -169,13 +170,13 @@ def main():
     sessions = _get_sessions(culture)
     total = len(sessions)
 
+    model_type = st.session_state.get("korean_model_type", "") if culture == "Korean" else ""
+
     # Resume logic (based on CSV)
-    _ensure_resume_pointer(sessions, rater_id=rater_id, culture=culture)
+    _ensure_resume_pointer(sessions, rater_id=rater_id, culture=culture, model_type=model_type)
 
     # Progress UI
     all_rows = read_assess_rows()
-    model_type = st.session_state.get("korean_model_type", "") if culture == "Korean" else ""
-
     done, total = compute_progress(
         total,
         all_rows,
@@ -407,7 +408,7 @@ def main():
             append_assessment_row(row)
 
             all_rows = read_assess_rows()
-            rated_ids_set = rated_session_ids(all_rows, rater_id=rater_id, culture=culture)
+            rated_ids_set = rated_session_ids(all_rows, rater_id=rater_id, culture=culture, model_type=model_type)
             nxt = _find_next_unrated_index(sessions, rated_ids_set)
 
             st.session_state["_scroll_top"] = True
