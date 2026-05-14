@@ -53,48 +53,15 @@ def _session_num_messages(session: dict) -> int:
     return 0
 
 
-# def _get_sessions(culture: str):
-#     sample_size = 6
-#     min_messages = 6
-
-#     # Same fixed random sample for all participants
-#     cache_key = f"_sessions_cache_{culture}_fixed_n{sample_size}_minmsg{min_messages}"
-#     cached = st.session_state.get(cache_key)
-
-#     if cached and isinstance(cached, list) and len(cached) > 0:
-#         return cached
-
-#     sessions = get_sessions_for_culture(culture)
-
-#     if culture == "Korean":
-#         import random
-
-#         # Remove sessions that are too short for meaningful evaluation
-#         eligible_sessions = [
-#             s for s in sessions
-#             if _session_num_messages(s) >= min_messages
-#         ]
-
-#         # Fallback: if filtering is too strict, use all sessions
-#         if len(eligible_sessions) >= sample_size:
-#             sessions = eligible_sessions
-
-#         rng = random.Random("irb_fixed_korean_6_sessions_v2_min6messages")
-
-#         if len(sessions) > sample_size:
-#             sessions = rng.sample(sessions, sample_size)
-
-#         # stable display order
-#         sessions = sorted(sessions, key=lambda x: str(x.get("session_id", "")))
-
-#     st.session_state[cache_key] = sessions
-#     return sessions
-
-
 def _get_sessions(culture: str):
-    cache_key = f"_sessions_cache_{culture}_fixed_6_same_for_base_and_finetuned"
-    cached = st.session_state.get(cache_key)
+    model_type = st.session_state.get("korean_model_type", "") if culture == "Korean" else ""
 
+    # IMPORTANT:
+    # model_type must be included in cache key so Base and Fine-tuned load different JSON contents.
+    # The selected session IDs remain the same because select_fixed_korean_sessions uses a fixed seed.
+    cache_key = f"_sessions_cache_{culture}_{model_type}_fixed_6"
+
+    cached = st.session_state.get(cache_key)
     if cached and isinstance(cached, list) and len(cached) > 0:
         return cached
 
@@ -160,12 +127,20 @@ def main():
 
     rater_id = st.session_state.get("rater_id", "").strip()
     email = st.session_state.get("email", "").strip()
+    
     ds_conf = DATASET_FILES.get(culture) or ""
+
     if culture == "Korean" and isinstance(ds_conf, dict):
-        model_type = st.session_state.get("korean_model_type", "") if culture=="Korean" else ""
+        model_type = st.session_state.get("korean_model_type", "Base Gemini")
         ds_file = str(ds_conf.get(model_type, ""))
     else:
+        model_type = ""
         ds_file = str(ds_conf)
+
+    # TEMP DEBUG: remove before final deployment
+    st.warning(f"DEBUG model_type: {model_type}")
+    st.warning(f"DEBUG ds_file: {ds_file}")
+
 
     sessions = _get_sessions(culture)
     total = len(sessions)
