@@ -205,24 +205,12 @@ def main():
     st.markdown("---")
     st.subheader(f"Session {idx + 1} / {len(sessions)}")
 
-    # topic = session.get("topic", "")
     psychotherapy = session.get("psychotherapy", "")
-
-    # if it's too long, truncate it (optional)
-    # if len(topic) > 50:
-    #     topic = topic[:50] + "..."
 
     st.markdown(f"""
     <span style="font-size: 0.85rem; opacity: 0.7;">
     Session ID: {sid}
     </span>
-
-<!--
-    <div style="margin-top: 8px;">
-    <span style="background-color:#2a2f3a; padding:4px 10px; border-radius:10px; font-size:0.8rem;">
-    {topic}
-    </span>
--->
 
     <span style="background-color:#2a2f3a; padding:4px 10px; border-radius:10px; font-size:0.8rem; margin-left:6px;">
     {psychotherapy}
