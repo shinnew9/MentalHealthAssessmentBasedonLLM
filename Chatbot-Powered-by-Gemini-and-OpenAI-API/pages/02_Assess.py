@@ -35,6 +35,7 @@ def scroll_to_top():
         height=0,
     )
 
+
 def _session_num_messages(session: dict) -> int:
     """
     Count how many dialogue messages/turns exist in a session.
@@ -204,7 +205,7 @@ def main():
     st.markdown("---")
     st.subheader(f"Session {idx + 1} / {len(sessions)}")
 
-    topic = session.get("topic", "")
+    # topic = session.get("topic", "")
     psychotherapy = session.get("psychotherapy", "")
 
     # if it's too long, truncate it (optional)
@@ -216,10 +217,12 @@ def main():
     Session ID: {sid}
     </span>
 
+<!--
     <div style="margin-top: 8px;">
     <span style="background-color:#2a2f3a; padding:4px 10px; border-radius:10px; font-size:0.8rem;">
     {topic}
     </span>
+-->
 
     <span style="background-color:#2a2f3a; padding:4px 10px; border-radius:10px; font-size:0.8rem; margin-left:6px;">
     {psychotherapy}
