@@ -209,8 +209,8 @@ def main():
     psychotherapy = session.get("psychotherapy", "")
 
     # if it's too long, truncate it (optional)
-    if len(topic) > 50:
-        topic = topic[:50] + "..."
+    # if len(topic) > 50:
+    #     topic = topic[:50] + "..."
 
     st.markdown(f"""
     <span style="font-size: 0.85rem; opacity: 0.7;">
