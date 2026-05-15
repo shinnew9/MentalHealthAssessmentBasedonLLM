@@ -6,7 +6,7 @@ KOREAN_FIXED_SEED = "irb_fixed_korean_6_sessions_v2_min6messages"
 
 
 KOREAN_FIXED_SESSION_IDS = {
-    "000495",
+    "000727",
     "000466",
     "000908",
     "000526",
