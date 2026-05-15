@@ -15,8 +15,6 @@ KOREAN_FIXED_SESSION_IDS = {
 }
 
 
-
-
 def session_num_messages(session: dict) -> int:
     for key in ["messages", "conversation", "dialogue", "turns"]:
         value = session.get(key)
