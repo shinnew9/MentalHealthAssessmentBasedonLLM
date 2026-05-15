@@ -137,10 +137,6 @@ def main():
         model_type = ""
         ds_file = str(ds_conf)
 
-    # TEMP DEBUG: remove before final deployment
-    st.warning(f"DEBUG model_type: {model_type}")
-    st.warning(f"DEBUG ds_file: {ds_file}")
-
 
     sessions = _get_sessions(culture)
     total = len(sessions)
